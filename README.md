@@ -43,6 +43,24 @@ To get started with the Video Trimmer, you can easily install it using the follo
 npm i video-trimmer
 ```
 
+Then click [here](https://github.com/gzuidhof/coi-serviceworker/blob/master/coi-serviceworker.min.js) to download the js file required for the trimming process.
+
+Now, add the link to the JavaScript file in your HTML file.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Trimmer</title>
+</head>
+<body>
+    <script src="coi-serviceworker.min.js"></script>
+</body>
+</html>
+```
+
 From this package, you will receive an exported class that enables you to pass to arguments:
 
 ```js
@@ -61,17 +79,16 @@ Integrating the Package into Your HTML File:
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Video Trimmer</title>
-    <link rel="icon" href="#"/>
 </head>
 <body>
-    <div class="video-trimmer"></div>
-    <script src="./node_modules/video-trimmer/dist/coi-serviceworker.js"></script>
+    <div class="trimmer"></div>
+    <script src="coi-serviceworker.min.js"></script>
     <script type="module">
-    import VideoTrimmer from "./node_modules/video-trimmer/dist/main.js";
-    const video = new VideoTrimmer('.video-trimmer','http://localhost:3000/api/files');
+        import VideoTrimmer from "./node_modules/video-trimmer/dist/main.js";
+        const video = new VideoTrimmer('.trimmer','url');
     </script>
 </body>
-</html> 
+</html>
 ```
 
 ## Screenshots:

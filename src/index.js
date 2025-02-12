@@ -1,5 +1,6 @@
 import * as FilePond from "filepond";
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
+import Toastify from 'toastify-js'
 import addImage from "./assets/images/add.png";
 import closeModalButton from "./assets/images/close.png";
 import downloadImage from "./assets/images/download.png";
@@ -7,6 +8,7 @@ import editButton from "./assets/images/edit.png";
 import removeImage from "./assets/images/remove.png";
 import saveButton from "./assets/images/save.png";
 import "filepond/dist/filepond.min.css";
+import "toastify-js/src/toastify.css"
 import "./index.css";
 
 const ffmpeg = createFFmpeg({ log: false });
@@ -16,6 +18,7 @@ export default class VideoTrimmer {
       link: "",
       file: null,
     };
+    this.duration = 0;
     this.element = element;
     this.url = url;
     this.trimmedVideos = [];
@@ -105,7 +108,14 @@ export default class VideoTrimmer {
         const videoFile = file.file;
         if (!videoFile.type.includes("video")) {
           setTimeout(() => {
-            alert(`Please upload a video file.`);
+            Toastify({
+              text: "Please upload a video file.",
+              duration: 2500,
+              stopOnFocus: true,
+              style: {
+                background: "#D91656",
+              }
+            }).showToast();
           }, 500);
           return;
         }
@@ -113,16 +123,28 @@ export default class VideoTrimmer {
           !(videoFile.type === "video/mp4" || videoFile.type === "video/webm")
         ) {
           setTimeout(() => {
-            alert(`Please upload video in mp4 or webm format.`);
+            Toastify({
+              text: "Please upload video in mp4 or webm format.",
+              duration: 2500,
+              stopOnFocus: true,
+              style: {
+                background: "#D91656",
+              }
+            }).showToast();
           }, 500);
           return;
         }
         const MAX_SIZE_IN_BYTES = 1 * 1024 * 1024 * 1024;
         if (videoFile.size > MAX_SIZE_IN_BYTES) {
           setTimeout(() => {
-            alert(
-              `The video file size should not exceed 1GB. Please upload a smaller file.`
-            );
+            Toastify({
+              text: "The video file size should not exceed 1GB. Please upload a smaller file.",
+              duration: 2500,
+              stopOnFocus: true,
+              style: {
+                background: "#D91656",
+              }
+            }).showToast();
           }, 500);
           return;
         }
@@ -145,7 +167,7 @@ export default class VideoTrimmer {
                   </div>
                   <div class="video-player-options">
                     <button id="add-marker">
-                      <img src=${`${addImage}`} alt="add-marker" height="16" width="18" />
+                      <img src=${addImage} alt="add-marker" height="16" width="18" />
                       <span>Add Trim Marker</span>
                     </button>
                   </div>
@@ -211,7 +233,7 @@ export default class VideoTrimmer {
                 ${
                   this.sliders.length > 1
                     ? `<button class="remove-marker">
-                <img src=${`${removeImage}`}>
+                <img src=${removeImage}>
                 Remove
                 </button>`
                     : ""
@@ -261,6 +283,7 @@ export default class VideoTrimmer {
   makeGrabberDraggable(grabber, sliderIndex, isStartGrabber) {
     let isDragging = false;
     const video = window.document.querySelector(".view-video");
+    this.duration = video.duration;
     if (isStartGrabber) {
       grabber.addEventListener("click", () => {
         video.currentTime = this.sliders[sliderIndex].startTime;
@@ -323,8 +346,8 @@ export default class VideoTrimmer {
     this.renderSliders();
   }
   removeSlider(index) {
-    this.sliders = this.sliders.filter((_, i) => index !== i);
-    this.renderSliders();
+      this.sliders = this.sliders.filter((_, i) => index !== i);
+      this.renderSliders();
   }
   renderResultsTable() {
     const modalContent =
@@ -346,7 +369,7 @@ export default class VideoTrimmer {
               <div class="trimmed-videoname">${this.trimmedVideos[i].name}</div>
               <div class="edit-toggle">
                 <button class="editname">
-                  <img src=${`${editButton}`} alt="edit-button" height={17} width={16} />
+                  <img src=${editButton} alt="edit-button" height={17} width={16} />
                   <span>Edit</span>
                 </button>
               </div>
@@ -363,7 +386,7 @@ export default class VideoTrimmer {
       <div class="edit-toggle">
         <button class="savebutton">
           <img
-            src=${`${saveButton}`}
+            src=${saveButton}
             alt="edit-button"
             height="17"
             width="16"
@@ -385,7 +408,7 @@ export default class VideoTrimmer {
                               ? `<div class="video-player-options">
                               <button class="removevideo">
                                 <img
-                                  src=${`${removeImage}`}
+                                  src=${removeImage}
                                   alt="remove-button"
                                   height="16"
                                   width="13"
@@ -399,7 +422,7 @@ export default class VideoTrimmer {
                               this.trimmedVideos[i].url
                             } class="button" download>
                               <img
-                                src=${`${downloadImage}`}
+                                src=${downloadImage}
                                 alt="download-button"
                                 height="16"
                                 width="13"
@@ -459,58 +482,61 @@ export default class VideoTrimmer {
     }
   }
   async trimVideo() {
-    const modalContent = document.getElementsByClassName("modal-content")[0];
-    const modalFooter = document.getElementsByClassName("modal-footer")[0];
-    await this.loadFFmpeg();
-    modalContent.innerHTML = `
-        <div class="loader-container">
-            <div class="loading"></div>
-        </div>
-    `;
-    modalFooter.innerHTML = "";
-    const videoFormat = this.videoState.file.type.split("/")[1];
-    const accurateSliders = this.sliders.map((element) => {
-      return {
-        startTime: parseInt(element.startTime),
-        endTime: parseInt(element.endTime),
-      };
-    });
-    for (let i = 0; i < this.sliders.length; i++) {
-      await this.ffmpeg.FS(
-        "writeFile",
-        `input_${i + 1}.${videoFormat}`,
-        await fetchFile(this.videoState.file)
-      );
-      const duration =
-        accurateSliders[i].endTime - accurateSliders[i].startTime;
-      await this.ffmpeg.run(
-        `-ss`,
-        `${accurateSliders[i].startTime}`,
-        `-i`,
-        `input_${i + 1}.${videoFormat}`,
-        `-t`,
-        `${duration}`,
-        `-c`,
-        `copy`,
-        `video_${i + 1}.${videoFormat}`
-      );
-      const data = this.ffmpeg.FS("readFile", `video_${i + 1}.${videoFormat}`);
-      const outputBlob = new Blob([data.buffer], {
-        type: this.videoState.file.type,
-      });
-      const url = URL.createObjectURL(outputBlob);
-      this.trimmedVideos.push({
-        name: `video${i + 1}`,
-        url,
-        duration: this.convertToHHMMSS(duration),
-        type: this.videoState.file.type,
-      });
+    try {
+        const modalContent = document.getElementsByClassName("modal-content")[0];
+        const modalFooter = document.getElementsByClassName("modal-footer")[0];
+        await this.loadFFmpeg(); 
+        modalContent.innerHTML = `
+            <div class="loader-container">
+                <div class="loading"></div>
+            </div>
+        `;
+        modalFooter.innerHTML = "";
+        const videoFormat = this.videoState.file.type.split("/")[1];
+        const accurateSliders = this.sliders.map((element) => ({
+            startTime: parseInt(element.startTime),
+            endTime: parseInt(element.endTime),
+        }));
+        for (let i = 0; i < accurateSliders.length; i++) {
+            const { startTime, endTime } = accurateSliders[i];
+            const duration = endTime - startTime;
+            const inputFileName = `input_${i + 1}.${videoFormat}`;
+            await this.ffmpeg.FS("writeFile", inputFileName, await fetchFile(this.videoState.file));
+            const trimmedVideoName = `video_${i + 1}.${videoFormat}`;
+            await this.ffmpeg.run(
+                "-ss", `${startTime}`,
+                "-i", inputFileName,
+                "-t", `${duration}`,
+                "-c", "copy",
+                trimmedVideoName
+            );
+            const trimmedVideoData = this.ffmpeg.FS("readFile", trimmedVideoName);
+            const trimmedBlob = new Blob([trimmedVideoData.buffer], { type: this.videoState.file.type });
+            const videoUrl = URL.createObjectURL(trimmedBlob);
+            this.trimmedVideos.push({
+                name:`video${i + 1}`,
+                url: videoUrl,
+                duration: this.convertToHHMMSS(duration),
+                type: this.videoState.file.type
+            });
+        }
+        this.renderResultsTable();
+        modalFooter.innerHTML = `<button id="addlessons" class="modal-button">Submit</button>`;
+        const addLessons = document.getElementById("addlessons");
+        addLessons.addEventListener("click", () => this.sendVideos());
+    } catch (error) {
+        console.error("Error during video trimming:", error);
+        Toastify({
+          text: "An error occurred while processing the videos. Please try again.",
+          duration: 2500,
+          stopOnFocus: true,
+          style: {
+            background: "#D91656",
+          }
+        }).showToast();
     }
-    this.renderResultsTable();
-    modalFooter.innerHTML = `<button id="addlessons" class="modal-button">Submit</button>`;
-    const addLessons = document.getElementById("addlessons");
-    addLessons.addEventListener("click", () => this.sendVideos());
-  }
+}
+
   renderVideoPlayer() {
     const modalContent =
       window.document.getElementsByClassName("modal-content")[0];
@@ -521,7 +547,9 @@ export default class VideoTrimmer {
               <div class="trimmer-container">
                 <div class="video-player">
                   <div class="video-wrapper">
-                    <video src=${this.videoState.link} controls class="view-video"></video>
+                    <video src=${
+                      this.videoState.link
+                    } controls class="view-video"></video>
                   </div>
                 </div>
                 <div class="video-timeline">
@@ -530,7 +558,7 @@ export default class VideoTrimmer {
                   </div>
                   <div class="video-player-options">
                     <button id="add-marker">
-                      <img src=${`${addImage}`} alt="add-marker" height="16" width="18" />
+                      <img src=${addImage} alt="add-marker" height="16" width="18" />
                       <span>Add Trim Marker</span>
                     </button>
                   </div>
@@ -561,10 +589,23 @@ export default class VideoTrimmer {
       },
     });
     if (!response.ok) {
-      alert(`Error occured while sending trimmed videos.`);
-    } else {
-      alert(`Video files sent successfully.`);
-    }
+      Toastify({
+        text: "Error occured while sending trimmed videos.",
+        duration: 2500,
+        stopOnFocus: true,
+        style: {
+          background: "#D91656",
+        }
+      }).showToast();
+    } 
+      Toastify({
+        text: "Video files sent successfully.",
+        duration: 2500,
+        stopOnFocus: true,
+        style: {
+          background: "#A1DD70",
+        }
+      }).showToast();
   }
   removeTrimmedVideo(index) {
     this.trimmedVideos = this.trimmedVideos.filter((_, i) => index !== i);
@@ -588,7 +629,14 @@ export default class VideoTrimmer {
       "update-trimmed-video-name"
     )[index];
     if (inputValue.value === "") {
-      alert(`Please enter an valid video name.`);
+      Toastify({
+        text: "Please enter an valid video name.",
+        duration: 2500,
+        stopOnFocus: true,
+        style: {
+          background: "#D91656",
+        }
+      }).showToast();
       return;
     }
     this.trimmedVideos[index].name = inputValue.value;
