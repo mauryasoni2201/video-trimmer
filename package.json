@@ -1,6 +1,6 @@
 {
   "name": "video-trimmer",
-  "version": "1.0.25",
+  "version": "1.1.0",
   "main": "./src/index.js",
   "repository": "https://github.com/mauryasoni2201/video-trimmer",
   "homepage": "https://video-trimmer-demo.vercel.app/",
