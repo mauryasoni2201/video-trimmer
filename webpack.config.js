@@ -1,18 +1,16 @@
 const path = require("path");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
-const distPath = path.resolve(__dirname, "dist");
-
 module.exports = {
-  mode: "development",
+  mode:"development",
   entry: "./src/index.js",
   experiments: {
-    outputModule: true,
+    outputModule: true
   },
   output: {
     filename: "main.js",
     libraryTarget: "module",
-    path: distPath,
+    path: path.resolve(__dirname, "dist"),
   },
   module: {
     rules: [
@@ -26,7 +24,5 @@ module.exports = {
       },
     ],
   },
-  plugins: [
-    new CleanWebpackPlugin(),
-  ],
+  plugins: [new CleanWebpackPlugin()]
 };

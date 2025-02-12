@@ -233,6 +233,10 @@ button {
   font-size: 13px;
   font-weight: 600;
   line-height: 17.7px;
+  transition: all 0.3s ease-in-out;
+}
+.modal-button:hover{
+  opacity: 0.8;
 }
 .video-upload-instructions {
   padding-top: 10px;
@@ -329,7 +333,12 @@ button {
   background-color: #f5f6f6;
   line-height: 17.7px;
   color: #0073aa;
+  transition: all 0.3s ease-in-out;
 }
+.video-player-options button:hover, .video-player-options a:hover {
+  opacity: 0.8;
+}
+
 .sliders-container {
   padding: 40px 0px;
 }

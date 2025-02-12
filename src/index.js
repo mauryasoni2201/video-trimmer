@@ -512,10 +512,12 @@ export default class VideoTrimmer {
             );
             const trimmedVideoData = this.ffmpeg.FS("readFile", trimmedVideoName);
             const trimmedBlob = new Blob([trimmedVideoData.buffer], { type: this.videoState.file.type });
+            const trimmedFile = new File([trimmedBlob], `video_${i + 1}.${videoFormat}`, { type: this.videoState.file.type });
             const videoUrl = URL.createObjectURL(trimmedBlob);
             this.trimmedVideos.push({
                 name:`video${i + 1}`,
                 url: videoUrl,
+                file: trimmedFile,
                 duration: this.convertToHHMMSS(duration),
                 type: this.videoState.file.type
             });
@@ -536,7 +538,6 @@ export default class VideoTrimmer {
         }).showToast();
     }
 }
-
   renderVideoPlayer() {
     const modalContent =
       window.document.getElementsByClassName("modal-content")[0];
@@ -581,32 +582,38 @@ export default class VideoTrimmer {
     });
   }
   async sendVideos() {
-    const response = await window.fetch(`${this.url}`, {
-      method: "POST",
-      body: JSON.stringify(this.trimmedVideos),
-      headers: {
-        "Content-type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      Toastify({
-        text: "Error occured while sending trimmed videos.",
-        duration: 2500,
-        stopOnFocus: true,
-        style: {
-          background: "#D91656",
+    const formData = new FormData();
+    this.trimmedVideos.forEach((video, index) => {
+        formData.append(`video-${index+1}`, video.file, `${video.name}.${video.type.split('/')[1]}`);
+    }); 
+    try {
+        const response = await fetch(`${this.url}`, {
+            method: "POST",
+            body: formData,
+        });
+
+        if (response.ok) {
+            Toastify({
+                text: "Videos uploaded successfully!",
+                duration: 2500,
+                style: {
+                    background: "#28a745",
+                }
+            }).showToast();
+        } else {
+            throw new Error("Upload failed");
         }
-      }).showToast();
-    } 
-      Toastify({
-        text: "Video files sent successfully.",
-        duration: 2500,
-        stopOnFocus: true,
-        style: {
-          background: "#A1DD70",
-        }
-      }).showToast();
-  }
+    } catch (error) {
+        console.error("Error uploading videos:", error);
+        Toastify({
+            text: "Failed to upload videos. Please try again.",
+            duration: 2500,
+            style: {
+                background: "#D91656",
+            }
+        }).showToast();
+    }
+}
   removeTrimmedVideo(index) {
     this.trimmedVideos = this.trimmedVideos.filter((_, i) => index !== i);
     this.sliders = this.sliders.filter((_, i) => index !== i);
