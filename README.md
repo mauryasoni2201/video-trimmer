@@ -91,7 +91,6 @@ Integrating the Package into Your HTML File:
 </html>
 ```
 
-click [here](https://video-trimmer-demo.vercel.app/)
 <div align="center">
   <h3>🌟 Made with ❤️ by Maurya Soni</h3>
   <p>
