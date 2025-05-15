@@ -91,22 +91,6 @@ Integrating the Package into Your HTML File:
 </html>
 ```
 
-## Screenshots:
-
-### Upload your video by manually selecting it or by using drag and drop option:
-
-![image](https://video-trimmer-demo.vercel.app/screenshots/image_upload.PNG)
-
-### Select the video part which you want to trim with the help of marker and then click on trim video:
-
-![image](https://video-trimmer-demo.vercel.app/screenshots/trimming_video.PNG)
-
-### Trimmed video results:
-
-![image](https://video-trimmer-demo.vercel.app/screenshots/trimmed_results.PNG)
-
-## Demo Link:
-
 click [here](https://video-trimmer-demo.vercel.app/)
 <div align="center">
   <h3>🌟 Made with ❤️ by Maurya Soni</h3>
