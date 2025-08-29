@@ -1,17 +1,4 @@
-import * as FilePond from 'filepond';
-import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
-import Toastify from 'toastify-js';
-import closeModalButton from './assets/images/closeicon.svg';
-import 'filepond/dist/filepond.min.css';
-import 'toastify-js/src/toastify.css';
-import './index.css';
-
-const ffmpeg = createFFmpeg({
-    log: true,
-    corePath: 'https://unpkg.com/@ffmpeg/core-st@0.11.0/dist/ffmpeg-core.js',
-});
-
-export default class VideoTrimmer {
+class VideoTrimmer {
     constructor(element, url) {
         this.videoState = {
             link: '',
@@ -38,7 +25,7 @@ export default class VideoTrimmer {
               <img
                 width="25"
                 height="25"
-                src=${closeModalButton}
+                src='src/assets/images/closeicon.svg'
                 alt="close-button"
               />
             </button>
