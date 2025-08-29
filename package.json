@@ -1,22 +1,18 @@
 {
   "name": "video-trimmer",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "main": "./src/index.js",
   "repository": "https://github.com/mauryasoni2201/video-trimmer",
-  "homepage": "https://video-trimmer-demo.vercel.app/",
-  "bugs": "https://github.com/mauryasoni2201/video-trimmer/issues",
   "scripts": {
     "build": "webpack"
   },
   "keywords": [
-    "video trimming",
-    "ffmpeg",
-    "filepond",
-    "drag-and-drop-files"
+    "drag-and-drop-files",
+    "video trimming"
   ],
   "author": "Maurya Soni",
   "license": "ISC",
-  "description": "Video Trimmer is designed to allow users to upload a video, add trim markers within the video, and then trim it. After trimming, users can obtain the trimmed video segments.",
+  "description": "Video Trimmer lets you upload a video, set trim points, and cut out unwanted parts. Download clean, high-quality clips in just a few clicks—simple, fast, and easy for everyone.",
   "dependencies": {
     "@ffmpeg/core": "^0.11.0",
     "@ffmpeg/ffmpeg": "^0.11.6",
@@ -26,7 +22,7 @@
   "devDependencies": {
     "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "^12.0.2",
-    "cpx": "^1.5.0",
+    "cpx": "^1.2.1",
     "css-loader": "^7.1.2",
     "fs-extra": "^11.3.0",
     "style-loader": "^4.0.0",

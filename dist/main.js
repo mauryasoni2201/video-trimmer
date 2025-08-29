@@ -304,7 +304,7 @@ eval("module.exports = __webpack_require__.p + \"2de34c4e54918508de9f.js\";\n\n/
   \*****************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("module.exports = __webpack_require__.p + \"ce9c8735548d14f8a869.svg\";\n\n//# sourceURL=webpack://video-trimmer/./src/assets/images/closeicon.svg?");
+eval("module.exports = __webpack_require__.p + \"6fa5a4f25db8f1e2ccb3.svg\";\n\n//# sourceURL=webpack://video-trimmer/./src/assets/images/closeicon.svg?");
 
 /***/ }),
 
